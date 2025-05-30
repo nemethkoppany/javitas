@@ -18,12 +18,12 @@ const tablecreation = (container, callback) =>{
         tr.appendChild(th);
     }
 
-    const tbody = document.createElement("body");
+    const tbody = document.createElement("tbody");
     table.appendChild(tbody);
     callback(tbody);
 }
 
-const upload = (tbody, container) => {
+const upload = (tbody, container, ) => {
     const fileInput = document.createElement('input')
     container.appendChild(fileInput);
     fileInput.id='fileinput'
@@ -33,8 +33,8 @@ const upload = (tbody, container) => {
         const file = e.target.files[0];
         const reader = new FileReader();
         reader.onload = () => {
-           const Lines = reader.result.split('\n')
-           const headerRemoved = Lines.slice(1);
+           const lines = reader.result.split('\n')
+           const headerRemoved = lines.slice(1);
            for(const line of headerRemoved){
                 const trimmed = line.trim();
                 const fields = trimmed.split(';');
