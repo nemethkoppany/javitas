@@ -54,22 +54,32 @@ const upload = (tbody, container, ) => {
 }
 
 const rowAddition = (obj, tbody) =>{
-    const tr = document.createElement("tr");
+    for(const elements of tomb){
+        const tr = document.createElement("tr");
 
-    const megnevezes = document.createElement("td");
-    megnevezes.textContent = obj.megnevezes;
-    tr.appendChild(megnevezes);
+        const megnevezes = document.createElement("td");
+        megnevezes.textContent = obj.megnevezes;
+        tr.appendChild(megnevezes);
+    
+        const hely = document.createElement("td");
+        hely.textContent = obj.hely;
+        tr.appendChild(hely);
+    
+        const honap = document.createElement("td");
+        honap.textContent = obj.honap;
+        tr.appendChild(honap);
+    
+        const osszeg = document.createElement("td");
+        osszeg.textContent = obj.osszeg;
+    }
 
-    const hely = document.createElement("td");
-    hely.textContent = obj.hely;
-    tr.appendChild(hely);
+    if(Number(obj.osszeg) < 0){
+        osszeg.classList.add("red");
+    }
+    else{
+        osszeg.classList.add("green");
+    }
 
-    const honap = document.createElement("td");
-    honap.textContent = obj.honap;
-    tr.appendChild(honap);
-
-    const osszeg = document.createElement("td");
-    osszeg.textContent = obj.osszeg;
     tr.appendChild(osszeg);
 
     tbody.appendChild(tr);
