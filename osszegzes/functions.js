@@ -1,3 +1,6 @@
+const osszegzesDiv = document.createElement('div');
+osszegzesDiv.id = "osszegzes";
+
 const tablecreation = (container, callback) =>{
     const div = document.createElement("div");
     container.appendChild(div);
@@ -21,9 +24,14 @@ const tablecreation = (container, callback) =>{
     const tbody = document.createElement("tbody");
     table.appendChild(tbody);
     callback(tbody);
+    div.appendChild(osszegzesDiv);
+}
+const osszegzes = (kiadas, bevetel) =>{
+     osszegzesDiv.innerHTML = `A teljes kiadás: ${kiadas} és a teljes bevétel: ${bevetel}`;
 }
 
-const upload = (tbody, container, ) => {
+
+const upload = (tbody, container) => {
     const fileInput = document.createElement('input')
     container.appendChild(fileInput);
     fileInput.id='fileinput'
@@ -35,19 +43,44 @@ const upload = (tbody, container, ) => {
         reader.onload = () => {
            const lines = reader.result.split('\n')
            const headerRemoved = lines.slice(1);
-           for(const line of headerRemoved){
-                const trimmed = line.trim();
-                const fields = trimmed.split(';');
-                const alkotas = {
-                    megnevezes: fields[0],
-                    hely: fields[1],
-                    honap: fields[2],
-                    osszeg: fields[3]
-                }
-                tomb.push(alkotas);
-                rowAddition(alkotas, tbody);
 
+           let kiadas = 0;
+           let bevetel = 0;
+
+          for(const line of headerRemoved){
+            const trimmed = line.trim();
+            if (!trimmed){
+                continue;
             }
+            const fields = trimmed.split(';');
+            let osszegStr = fields[3];
+            let lastChar = osszegStr[osszegStr.length - 1];
+
+            if (lastChar === '"') {
+                let teljes = "";
+                for (let i = 0; i < osszegStr.length - 1; i++) {
+                    teljes += osszegStr[i];
+                }
+                osszegStr = teljes;
+            }
+            const osszegSzam = parseInt(osszegStr);
+
+            if (osszegSzam < 0) {
+                kiadas += osszegSzam;
+            } else {
+                bevetel += osszegSzam;
+            }
+
+            const alkotas = {
+                megnevezes: fields[0],
+                hely: fields[1],
+                honap: fields[2],
+                osszeg: fields[3]
+            }
+            tomb.push(alkotas);
+            rowAddition(alkotas, tbody);
+        }
+            osszegzes(kiadas, bevetel);
         }
         reader.readAsText(file);
     })
@@ -69,16 +102,23 @@ const rowAddition = (obj, tbody) => {
     tr.appendChild(honap);
 
     const osszeg = document.createElement("td");
+    let osszegStr = obj.osszeg;
+    let lastChar = osszegStr[osszegStr.length - 1];
+    if (lastChar === '"') {
+        let teljes = "";
+        for (let i = 0; i < osszegStr.length - 1; i++) {
+        teljes += osszegStr[i];
+        }
+        osszegStr = teljes;
+    }
     osszeg.textContent = obj.osszeg;
-
-   const szam_osszeg = Number(parseInt(obj.osszeg));
+    const szam_osszeg = parseInt(osszegStr);
 
     if (szam_osszeg < 0) {
         osszeg.classList.add("red");
     } else {
         osszeg.classList.add("green");
     }
-
 
     tr.appendChild(osszeg);
     tbody.appendChild(tr);
