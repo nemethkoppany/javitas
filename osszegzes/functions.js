@@ -53,34 +53,33 @@ const upload = (tbody, container, ) => {
     })
 }
 
-const rowAddition = (obj, tbody) =>{
-    for(const elements of tomb){
-        const tr = document.createElement("tr");
+const rowAddition = (obj, tbody) => {
+    const tr = document.createElement("tr");
 
-        const megnevezes = document.createElement("td");
-        megnevezes.textContent = obj.megnevezes;
-        tr.appendChild(megnevezes);
-    
-        const hely = document.createElement("td");
-        hely.textContent = obj.hely;
-        tr.appendChild(hely);
-    
-        const honap = document.createElement("td");
-        honap.textContent = obj.honap;
-        tr.appendChild(honap);
-    
-        const osszeg = document.createElement("td");
-        osszeg.textContent = obj.osszeg;
-    }
+    const megnevezes = document.createElement("td");
+    megnevezes.textContent = obj.megnevezes;
+    tr.appendChild(megnevezes);
 
-    if(Number(obj.osszeg) < 0){
+    const hely = document.createElement("td");
+    hely.textContent = obj.hely;
+    tr.appendChild(hely);
+
+    const honap = document.createElement("td");
+    honap.textContent = obj.honap;
+    tr.appendChild(honap);
+
+    const osszeg = document.createElement("td");
+    osszeg.textContent = obj.osszeg;
+
+   const szam_osszeg = Number(parseInt(obj.osszeg));
+
+    if (szam_osszeg < 0) {
         osszeg.classList.add("red");
-    }
-    else{
+    } else {
         osszeg.classList.add("green");
     }
 
-    tr.appendChild(osszeg);
 
+    tr.appendChild(osszeg);
     tbody.appendChild(tr);
 }
