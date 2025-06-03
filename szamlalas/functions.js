@@ -1,40 +1,12 @@
 function tablecreation(container, callback) {
-const filterDiv = document.createElement("div");
-    container.appendChild(filterDiv);
 
     const tableDiv = document.createElement("div");
     container.appendChild(tableDiv);
-
-    const oszlopSelect = document.createElement("select");
-    const oszlopok = ["megnevezes", "hely", "honap", "osszeg"];
-    for (let i = 0; i < oszlopok.length; i++) {
-        const opcio = document.createElement("option");
-        opcio.value = oszlopok[i];
-        opcio.textContent = oszlopok[i];
-        oszlopSelect.appendChild(opcio);
-    }
-    filterDiv.appendChild(oszlopSelect);
-
-    const iranySelect = document.createElement("select");
-    const iranyok = ["csökkenő", "növekvő"];
-    for (let i = 0; i < iranyok.length; i++) {
-        const opcio = document.createElement("option");
-        opcio.value = iranyok[i];
-        opcio.textContent = iranyok[i];
-        iranySelect.appendChild(opcio);
-    }
-    filterDiv.appendChild(iranySelect);
-
-    const gomb = document.createElement("button");
-    gomb.textContent = "Rendezés";
-    filterDiv.appendChild(gomb);
-
     const table = document.createElement("table");
     tableDiv.appendChild(table);
-
+    table.id = "table"
     const thead = document.createElement("thead");
     table.appendChild(thead);
-
     const tr = document.createElement("tr");
     thead.appendChild(tr);
 
@@ -44,54 +16,16 @@ const filterDiv = document.createElement("div");
         th.textContent = thead_content[i];
         tr.appendChild(th);
     }
-
     const tbody = document.createElement("tbody");
     table.appendChild(tbody);
-
     callback(tbody);
-
-    gomb.addEventListener("click", () => {
-        const oszlop = oszlopSelect.value;
-        const irany = iranySelect.value;
-
-        for (let i = 0; i < tomb.length - 1; i++) {
-            for (let j = 0; j < tomb.length - 1 - i; j++) {
-                let tranzakcio1 = tomb[j];
-                let tranzakcio2 = tomb[j + 1];
-
-                let value1 = tranzakcio1[oszlop.toLowerCase()];
-                let value2 = tranzakcio2[oszlop.toLowerCase()];
-
-                if (oszlop === "osszeg") {
-                    value1 = parseInt(value1);
-                    value2 = parseInt(value2);
-                }
-
-                let csere = false;
-                if (irany === "növekvő" && value1 > value2){
-                     csere = true;
-                }
-                if (irany === "csökkenő" && value1 < value2){
-                     csere = true;
-                }
-
-                if (csere) {
-                    let temp = tomb[j];
-                    tomb[j] = tomb[j + 1];
-                    tomb[j + 1] = temp;
-                }
-            }
-        }
-
-        tbody.innerHTML = "";
-        for (let i = 0; i < tomb.length; i++) {
-            rowAddition(tomb[i], tbody);
-        }
-    });
 }
 
-const upload = (tbody, container) => {
 
+
+const upload = (tbody, container) => {
+    const countDiv = document.createElement("div");
+    container.appendChild(countDiv);
     const fileInput = document.createElement('input')
     container.appendChild(fileInput);
     fileInput.id='fileinput'
@@ -115,6 +49,15 @@ const upload = (tbody, container) => {
                 tomb.push(tranzakcio);
                 rowAddition(tranzakcio, tbody);
            }
+              let szamlalo = 0;
+   for(let i = 0; i < tbody.rows.length; i++){
+    let row = tbody.rows[i];
+    for(let j = 0; j < row.cells.length; j++){
+        szamlalo++;
+    }
+   }
+
+    countDiv.textContent = `A táblázatban ${szamlalo} elem található`
         }
         reader.readAsText(file);
     });
@@ -149,5 +92,3 @@ const rowAddition = (obj, tbody) => {
     tr.appendChild(osszeg);
     tbody.appendChild(tr);
 }
-
-
