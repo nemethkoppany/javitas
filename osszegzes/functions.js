@@ -53,17 +53,7 @@ const upload = (tbody, container) => {
                 continue;
             }
             const fields = trimmed.split(';');
-            let osszegStr = fields[3];
-            let lastChar = osszegStr[osszegStr.length - 1];
-
-            if (lastChar === '"') {
-                let teljes = "";
-                for (let i = 0; i < osszegStr.length - 1; i++) {
-                    teljes += osszegStr[i];
-                }
-                osszegStr = teljes;
-            }
-            const osszegSzam = parseInt(osszegStr);
+            const osszegSzam = parseInt(fields[3]);
 
             if (osszegSzam < 0) {
                 kiadas += osszegSzam;
@@ -71,14 +61,14 @@ const upload = (tbody, container) => {
                 bevetel += osszegSzam;
             }
 
-            const alkotas = {
+            const tranzakcio = {
                 megnevezes: fields[0],
                 hely: fields[1],
                 honap: fields[2],
                 osszeg: fields[3]
             }
-            tomb.push(alkotas);
-            rowAddition(alkotas, tbody);
+            tomb.push(tranzakcio);
+            rowAddition(tranzakcio, tbody);
         }
             osszegzes(kiadas, bevetel);
         }
@@ -102,17 +92,10 @@ const rowAddition = (obj, tbody) => {
     tr.appendChild(honap);
 
     const osszeg = document.createElement("td");
-    let osszegStr = obj.osszeg;
-    let lastChar = osszegStr[osszegStr.length - 1];
-    if (lastChar === '"') {
-        let teljes = "";
-        for (let i = 0; i < osszegStr.length - 1; i++) {
-        teljes += osszegStr[i];
-        }
-        osszegStr = teljes;
-    }
     osszeg.textContent = obj.osszeg;
-    const szam_osszeg = parseInt(osszegStr);
+    tr.appendChild(osszeg);
+
+    const szam_osszeg = parseInt(obj.osszeg);
 
     if (szam_osszeg < 0) {
         osszeg.classList.add("red");
