@@ -1,7 +1,8 @@
 const tomb = [];
 
-const container = document.createElement("container");
+const container = document.createElement("div");
 document.body.appendChild(container);
-tablecreation(container, (tbody) =>{
-    upload(tbody, container, tomb);
-})
+
+tableAndFormCreation(container, (tbody, filterDiv, osszegDiv) => {
+    upload(tbody, container, tomb, filterDiv, osszegDiv);
+});

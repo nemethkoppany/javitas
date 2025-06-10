@@ -1,33 +1,71 @@
-function tablecreation(container, callback) {
-const filterDiv = document.createElement("div");
+function tableAndFormCreation(container, callback) {
+    const filterDiv = document.createElement("div");
     container.appendChild(filterDiv);
 
-    const tableDiv = document.createElement("div");
-    container.appendChild(tableDiv);
+    const osszegDiv = document.createElement("div");
+    filterDiv.appendChild(osszegDiv);
+
+    const szuroForm = document.createElement("form");
+    filterDiv.appendChild(szuroForm);
+
+    const megnevezesLabel = document.createElement("label");
+    megnevezesLabel.textContent = "Megnevezés: ";
+    szuroForm.appendChild(megnevezesLabel);
+    const megnevezesInput = document.createElement("input");
+    szuroForm.appendChild(megnevezesInput);
+
+    szuroForm.appendChild(document.createElement("br"));
+
+    const osszegLabel = document.createElement("label");
+    osszegLabel.textContent = "Összeg: ";
+    szuroForm.appendChild(osszegLabel);
+    const osszegInput = document.createElement("input");
+    osszegInput.type = "number";
+    szuroForm.appendChild(osszegInput);
+
+    szuroForm.appendChild(document.createElement("br"));
+
+    const honapLabel = document.createElement("label");
+    honapLabel.textContent = "Hónap: ";
+    szuroForm.appendChild(honapLabel);
+    const honapSelect = document.createElement("select");
+    const honapok = ["", "jan", "feb", "mar", "apr", "maj", "jun", "jul", "aug", "szep", "okt", "nov", "dec"];
+    for (let honap of honapok) {
+        const opcio = document.createElement("option");
+        opcio.value = honap;
+        opcio.textContent = honap;
+        honapSelect.appendChild(opcio);
+    }
+    szuroForm.appendChild(honapSelect);
+
+    szuroForm.appendChild(document.createElement("br"));
+
+    const szuroGomb = document.createElement("button");
+    szuroGomb.textContent = "Szűrés";
+    szuroForm.appendChild(szuroGomb);
 
     const oszlopSelect = document.createElement("select");
     const oszlopok = ["megnevezes", "hely", "honap", "osszeg"];
-    for (let i = 0; i < oszlopok.length; i++) {
+    for (let oszlop of oszlopok) {
         const opcio = document.createElement("option");
-        opcio.value = oszlopok[i];
-        opcio.textContent = oszlopok[i];
+        opcio.value = oszlop;
+        opcio.textContent = oszlop;
         oszlopSelect.appendChild(opcio);
     }
     filterDiv.appendChild(oszlopSelect);
 
     const iranySelect = document.createElement("select");
     const iranyok = ["csökkenő", "növekvő"];
-    for (let i = 0; i < iranyok.length; i++) {
+    for (let irany of iranyok) {
         const opcio = document.createElement("option");
-        opcio.value = iranyok[i];
-        opcio.textContent = iranyok[i];
+        opcio.value = irany;
+        opcio.textContent = irany;
         iranySelect.appendChild(opcio);
     }
     filterDiv.appendChild(iranySelect);
 
-    const gomb = document.createElement("button");
-    gomb.textContent = "Rendezés";
-    filterDiv.appendChild(gomb);
+    const tableDiv = document.createElement("div");
+    container.appendChild(tableDiv);
 
     const table = document.createElement("table");
     tableDiv.appendChild(table);
@@ -39,68 +77,62 @@ const filterDiv = document.createElement("div");
     thead.appendChild(tr);
 
     const thead_content = ["Megnevezés", "Hely", "Hónap", "Összeg"];
-    for (let i = 0; i < thead_content.length; i++) {
+    for (let text of thead_content) {
         const th = document.createElement("th");
-        th.textContent = thead_content[i];
+        th.textContent = text;
         tr.appendChild(th);
     }
 
     const tbody = document.createElement("tbody");
     table.appendChild(tbody);
 
-    callback(tbody);
+    callback(tbody, filterDiv, osszegDiv);
 
-    gomb.addEventListener("click", () => {
-        const oszlop = oszlopSelect.value;
-        const irany = iranySelect.value;
+    szuroForm.addEventListener("submit", (e) => {
+    e.preventDefault();
 
-        for (let i = 0; i < tomb.length - 1; i++) {
-            for (let j = 0; j < tomb.length - 1 - i; j++) {
-                let tranzakcio1 = tomb[j];
-                let tranzakcio2 = tomb[j + 1];
-
-                let value1 = tranzakcio1[oszlop.toLowerCase()];
-                let value2 = tranzakcio2[oszlop.toLowerCase()];
-
-                if (oszlop === "osszeg") {
-                    value1 = parseInt(value1);
-                    value2 = parseInt(value2);
-                }
-
-                let csere = false;
-                if (irany === "növekvő" && value1 > value2){
-                     csere = true;
-                }
-                if (irany === "csökkenő" && value1 < value2){
-                     csere = true;
-                }
-
-                if (csere) {
-                    let temp = tomb[j];
-                    tomb[j] = tomb[j + 1];
-                    tomb[j + 1] = temp;
-                }
-            }
-            
-        }
-
-        tbody.innerHTML = "";
-        for (let i = 0; i < tomb.length; i++) {
-            rowAddition(tomb[i], tbody);
-        }
+    const szurtAdatok = tomb.filter(elem => {
+        if (megnevezesInput.value && !elem.megnevezes.toLowerCase().includes(megnevezesInput.value.toLowerCase())) return false;
+        if (osszegInput.value && parseInt(elem.osszeg) !== parseInt(osszegInput.value)) return false;
+        if (honapSelect.value && elem.honap !== honapSelect.value) return false;
+        return true;
     });
-    
-}
-const osszegzes = (kiadas, bevetel, div) =>{
-     div.innerHTML = `A teljes kiadás: ${kiadas} és a teljes bevétel: ${bevetel}`;
+
+    const oszlop = oszlopSelect.value;
+    const irany = iranySelect.value;
+    const direction = irany === "csökkenő" ? -1 : 1;
+
+    szurtAdatok.sort((a, b) => {
+        let value1 = a[oszlop];
+        let value2 = b[oszlop];
+
+        if (oszlop === "osszeg") {
+            value1 = parseFloat(value1);
+            value2 = parseFloat(value2);
+        } else {
+            value1 = value1.toString().toLowerCase();
+            value2 = value2.toString().toLowerCase();
+        }
+
+        if (value1 < value2) return -1 * direction;
+        if (value1 > value2) return 1 * direction;
+        return 0;
+    });
+
+    tbody.innerHTML = "";
+    for (let elem of szurtAdatok) {
+        rowAddition(elem, tbody);
+    }
+});
+
 }
 
-const upload = (tbody, container) => {
-
-    const fileInput = document.createElement('input')
-    container.appendChild(fileInput);
-    fileInput.id='fileinput'
+function upload(tbody, container, tomb, filterDiv, osszegDiv) {
+    const fileInput = document.createElement('input');
     fileInput.type = 'file';
+    fileInput.id = 'fileinput';
+    filterDiv.appendChild(document.createElement("br"));
+    filterDiv.appendChild(fileInput);
 
     let kiadas = 0;
     let bevetel = 0;
@@ -108,35 +140,48 @@ const upload = (tbody, container) => {
     fileInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         const reader = new FileReader();
+
         reader.onload = () => {
-           const Lines = reader.result.split('\n')
-           const headerRemoved = Lines.slice(1);
-           for(const line of headerRemoved){
+            const Lines = reader.result.split('\n');
+            const headerRemoved = Lines.slice(1);
+            tomb.length = 0;
+            tbody.innerHTML = "";
+            kiadas = 0;
+            bevetel = 0;
+
+            for (const line of headerRemoved) {
                 const trimmed = line.trim();
+                if (!trimmed) continue;
+
                 const fields = trimmed.split(';');
                 const tranzakcio = {
                     megnevezes: fields[0],
                     hely: fields[1],
                     honap: fields[2],
                     osszeg: fields[3]
-                }
+                };
                 tomb.push(tranzakcio);
                 rowAddition(tranzakcio, tbody);
-                 const osszegSzam = parseInt(fields[3]);
 
-                  if (osszegSzam < 0) {
-                kiadas += osszegSzam;
-            } else {
-                bevetel += osszegSzam;
+                const osszegSzam = parseInt(fields[3]);
+                if (osszegSzam < 0) kiadas += osszegSzam;
+                else bevetel += osszegSzam;
             }
-           }
-           osszegzes(kiadas, bevetel,filterDiv);
-        }
+
+            osszegzes(kiadas, bevetel, osszegDiv);
+
+            const table = container.querySelector("table");
+            const rows = table.querySelectorAll("tr");
+            let totalCells = 0;
+            rows.forEach(row => totalCells += row.cells.length);
+
+            osszegDiv.textContent += ` | Összes cella: ${totalCells}`;
+        };
         reader.readAsText(file);
     });
-};
+}
 
-const rowAddition = (obj, tbody) => {
+function rowAddition(obj, tbody) {
     const tr = document.createElement("tr");
 
     const megnevezes = document.createElement("td");
@@ -152,18 +197,15 @@ const rowAddition = (obj, tbody) => {
     tr.appendChild(honap);
 
     const osszeg = document.createElement("td");
-   osszeg.textContent = obj.osszeg;
-   tr.appendChild(osszeg);
+    osszeg.textContent = obj.osszeg;
     const szam_osszeg = parseInt(obj.osszeg);
-
-    if (szam_osszeg < 0) {
-        osszeg.classList.add("red");
-    } else {
-        osszeg.classList.add("green");
-    }
-
+    if (szam_osszeg < 0) osszeg.classList.add("red");
+    else osszeg.classList.add("green");
     tr.appendChild(osszeg);
+
     tbody.appendChild(tr);
 }
 
-
+function osszegzes(kiadas, bevetel, div) {
+    div.innerHTML = `A teljes kiadás: ${kiadas} és a teljes bevétel: ${bevetel}`;
+}
