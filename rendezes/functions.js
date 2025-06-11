@@ -54,34 +54,45 @@ const filterDiv = document.createElement("div");
         const oszlop = oszlopSelect.value;
         const irany = iranySelect.value;
 
-        for (let i = 0; i < tomb.length - 1; i++) {
-            for (let j = 0; j < tomb.length - 1 - i; j++) {
-                let tranzakcio1 = tomb[j];
-                let tranzakcio2 = tomb[j + 1];
+        let rendezett = false;
 
-                let value1 = tranzakcio1[oszlop.toLowerCase()];
-                let value2 = tranzakcio2[oszlop.toLowerCase()];
+while (!rendezett) {
+    rendezett = true;
 
-                if (oszlop === "osszeg") {
-                    value1 = parseInt(value1);
-                    value2 = parseInt(value2);
-                }
+    for (let i = 0; i < tomb.length - 1; i++) {
+        const aktualis = tomb[i];
+        const kovetkezo = tomb[i + 1];
 
-                let csere = false;
-                if (irany === "növekvő" && value1 > value2){
-                     csere = true;
-                }
-                if (irany === "csökkenő" && value1 < value2){
-                     csere = true;
-                }
+        let ertek1 = aktualis[oszlop];
+        let ertek2 = kovetkezo[oszlop];
 
-                if (csere) {
-                    let temp = tomb[j];
-                    tomb[j] = tomb[j + 1];
-                    tomb[j + 1] = temp;
-                }
-            }
+        if (oszlop === "osszeg") {
+            ertek1 = parseInt(ertek1);
+            ertek2 = parseInt(ertek2);
+        } else {
+            ertek1 = ertek1.toString().toLowerCase();
+            ertek2 = ertek2.toString().toLowerCase();
         }
+
+        let kellCsere = false;
+
+        if (irany === "növekvő" && ertek1 > ertek2) {
+            kellCsere = true;
+        }
+
+        if (irany === "csökkenő" && ertek1 < ertek2) {
+            kellCsere = true;
+        }
+
+        if (kellCsere) {
+            const ideiglenes = tomb[i];
+            tomb[i] = tomb[i + 1];
+            tomb[i + 1] = ideiglenes;
+            rendezett = false; 
+        }
+    }
+}
+
 
         tbody.innerHTML = "";
         for (let i = 0; i < tomb.length; i++) {

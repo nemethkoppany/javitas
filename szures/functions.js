@@ -58,8 +58,8 @@ function tablecreation(container, callback) {
 
             let Hasvalue = true;
 
-            if (megnevezesInput.value.toLocaleLowerCase() !== "") {
-                if (!elem.megnevezes.toLocaleLowerCase().includes(megnevezesInput.value.toLowerCase())) {
+            if (megnevezesInput.value.toLowerCase() !== "") {
+                if (!elem.megnevezes.toLowerCase().includes(megnevezesInput.value.toLowerCase())) {
                     Hasvalue = false;
                 }
             }

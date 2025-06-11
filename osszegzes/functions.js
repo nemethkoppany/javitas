@@ -49,9 +49,6 @@ const upload = (tbody, container) => {
 
           for(const line of headerRemoved){
             const trimmed = line.trim();
-            if (!trimmed){
-                continue;
-            }
             const fields = trimmed.split(';');
             const osszegSzam = parseInt(fields[3]);
 
